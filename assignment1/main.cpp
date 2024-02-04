@@ -1,4 +1,4 @@
-// this program gets matrixes from a text file and looks to see if those matrixes have vertical symetry. If they do it will print yes 
+ // this program gets matrixes from a text file and looks to see if those matrixes have vertical symetry. If they do it will print yes 
 // if not it it will print out no. Then it will sort the a row in the matrix from smallest to largest and print out the matrix again
 
 #include <string>
