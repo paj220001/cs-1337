@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
+#include <memory>
 using namespace std;
 
 const int MAX_ARRAY = 10;
@@ -36,8 +37,12 @@ int main()
  
             cout << endl << "Press the enter key once or twice to leave..." << endl; cin.ignore(); cin.get();
 
-        }while(true);
+            for(int i = 0; i < count; i++)
+            {
+                delete ptrArray[i];
+            }
 
+        }while(true);
     }
     else 
     {
@@ -45,6 +50,7 @@ int main()
         cout << endl << "Press the enter key once or twice to leave..." << endl; cin.ignore(); cin.get();
         exit(EXIT_FAILURE);
     }
+
 
     cout << "Program Done." << endl;
 }
@@ -59,7 +65,7 @@ bool readIntoDataArray(ifstream &inputFile, int donations[],unsigned int &count,
         for(int counter = 0; counter < count; counter++)
         {
             inputFile >> donations[counter];
-            ptrArray[counter] = &donations[counter];
+            ptrArray[counter] = new int(donations[counter]);
         }
 
     }
