@@ -54,107 +54,130 @@ int main() {
     MasterInfoDiscriminatedUnionStruct masterInfoDiscriminatedUnionStruct;
     uint8_t entryPositionIndex = 0;
     ifstream telemetryInputChannel(TELEMETRY_INPUT_CHANNEL);
-  
-    // Check if open failure, pause screen, leave
+    MasterUnion info;
+    
+    if(telemetryInputChannel)
+    {
 
-    GroundStationOutputChannel << setprecision(1) << fixed << showpoint;
+      GroundStationOutputChannel << setprecision(1) << fixed << showpoint;
 
-    // in infoStoredArray set each element infoType to EMPTY
+      // in infoStoredArray set each element infoType to EMPTY
+      for(int count = 0; count < ARRAY_DATA_STORAGE_SIZE; count++)
+      {
+        infoStoredArray[count].infoTypeEnum = INFO_TYPE_ENUM_CLASS::EMPTY;
+      }
+      uint16_t messageIdUInt;
+      while (telemetryInputChannel >> messageIdUInt) {
+          GroundStationOutputChannel <<
+              "Current Telemetry Information: " << endl <<
+              "------------------------------ " << endl;
 
-    uint16_t messageIdUInt;
-    while (telemetryInputChannel >> messageIdUInt) {
-        GroundStationOutputChannel <<
-            "Current Telemetry Information: " << endl <<
-            "------------------------------ " << endl;
+          // convert file number messageIdUInt to enumerated messageIdEnum variable 
+          if(messageIdUInt == 1)
+          {
+            messageIdEnum = MESSAGE_ID_ENUM_CLASS::SATELLITE_INFORMATION_MESSAGE;
+          }
+          else 
+          if(messageIdUInt == 2)
+          {
+            messageIdEnum = MESSAGE_ID_ENUM_CLASS::EXPERIMENT_INFORMATION_MESSAGE;
+          }
+          switch (messageIdEnum) {
+          
+            case MESSAGE_ID_ENUM_CLASS::SATELLITE_INFORMATION_MESSAGE:
 
-        // convert file number messageIdUInt to enumerated messageIdEnum variable 
-        
-        switch (messageIdEnum) {
-        
-          case MESSAGE_ID_ENUM_CLASS::SATELLITE_INFORMATION_MESSAGE:
+              // set discriminated union masterInfoDiscriminatedUnionStruct infoType to SATELLITE INFORMATION
+              masterInfoDiscriminatedUnionStruct.infoTypeEnum = INFO_TYPE_ENUM_CLASS::SATELLITE_INFORMATION;
+              // read in from telemetryInputChannel into union masterInfoSatellite temperature and voltage
+              telemetryInputChannel >> info.satelliteInformation.temperature >> info.satelliteInformation.voltage;
+              // send this information to the Ground Station Output Channel, see output in the assignment
+              GroundStationOutputChannel << "Temperature : " << info.satelliteInformation.temperature << endl;
+              GroundStationOutputChannel << "Voltage : " << info.satelliteInformation.voltage << endl;
+              // put masterInfoDiscriminatedUnionStruct into stored array at the entry Position Index
+              // adjust entryPositionIndex to next entry or back to start index if past end of array
 
-            // set discriminated union masterInfoDiscriminatedUnionStruct infoType to SATELLITE INFORMATION
-            // read in from telemetryInputChannel into union masterInfoSatellite temperature and voltage
-            // send this information to the Ground Station Output Channel, see output in the assignment
-            // put masterInfoDiscriminatedUnionStruct into stored array at the entry Position Index
-            // adjust entryPositionIndex to next entry or back to start index if past end of array
+            break; //MESSAGE_ID_ENUM_CLASS::SATELLITE_INFORMATION_MESSAGE:
 
-          break; //MESSAGE_ID_ENUM_CLASS::SATELLITE_INFORMATION_MESSAGE:
+            case MESSAGE_ID_ENUM_CLASS::EXPERIMENT_INFORMATION_MESSAGE:
 
-          case MESSAGE_ID_ENUM_CLASS::EXPERIMENT_INFORMATION_MESSAGE:
+              // set discriminated union masterInfoDiscriminatedUnionStruct infoTypeEnum to EXPIRIMENT INFORMATION
+              // read in from telemetryInputChannel into union masterInfoSatellite radiation Count and latchupEventsCount
+              // send this information to the Ground Station Output Channel, see output in the assignment
+              // put masterInfoDiscriminatedUnionStruct into stored array at the entry Position Index
+              // adjust entryPositionIndex to next entry or back to start index if past end of array
 
-            // set discriminated union masterInfoDiscriminatedUnionStruct infoTypeEnum to EXPIRIMENT INFORMATION
-            // read in from telemetryInputChannel into union masterInfoSatellite radiation Count and latchupEventsCount
-            // send this information to the Ground Station Output Channel, see output in the assignment
-            // put masterInfoDiscriminatedUnionStruct into stored array at the entry Position Index
-            // adjust entryPositionIndex to next entry or back to start index if past end of array
+            break; //MESSAGE_ID::EXPERIMENT_INFORMATION_MESSAGE:
 
-          break; //MESSAGE_ID::EXPERIMENT_INFORMATION_MESSAGE:
+          }//switch (infoStoredArray[index].infoType)
 
-        }//switch (infoStoredArray[index].infoType)
+          // set summary information initialization
 
-        // set summary information initialization
+          uint16_t totalRadiationCount    = 0,
+                  totalLatchupEventCount = 0,
+                  infoSICount            = 0,
+                  infoEICount            = 0;
 
-        uint16_t totalRadiationCount    = 0,
-                 totalLatchupEventCount = 0,
-                 infoSICount            = 0,
-                 infoEICount            = 0;
+          //set SI Info calculate min max for SI
+          
+          GroundStationOutputChannel <<
+              "History:" << endl <<
+              "--------" << endl;
 
-        //set SI Info calculate min max for SI
-        
-        GroundStationOutputChannel <<
-            "History:" << endl <<
-            "--------" << endl;
+          for (uint8_t index = 0; index < ARRAY_DATA_STORAGE_SIZE; index++) {
+              switch (infoStoredArray[index].infoTypeEnum) {
 
-        for (uint8_t index = 0; index < ARRAY_DATA_STORAGE_SIZE; index++) {
-            switch (infoStoredArray[index].infoTypeEnum) {
+                case INFO_TYPE_ENUM_CLASS::SATELLITE_INFORMATION:
 
-              case INFO_TYPE_ENUM_CLASS::SATELLITE_INFORMATION:
+                  // send to ground station output channel temperature and voltage
+                  // see assignment output example
+                  // increment info SI Count
 
-                // send to ground station output channel temperature and voltage
-                // see assignment output example
-                // increment info SI Count
-
-                // set running min max summary information (temperature, voltage)
-                  
-              break; //case SATELLITE_INFORMATION:
-
-              case INFO_TYPE_ENUM_CLASS::EXPIRIMENT_INFORMATION:
-
-                // send to ground station output channel radiation and latchup Events Count
-                // see assignemnt output example
-                // increment info EI Count
-                // increase sum up totals for radiationCount and LatchupEventCount  
-                // from infoStoredArrayatindexExperiment for radiationCount and latchupEventCount                  
+                  // set running min max summary information (temperature, voltage)
                     
-              break;//case EXPIRIMENT_INFORMATION:
+                break; //case SATELLITE_INFORMATION:
 
-              case INFO_TYPE_ENUM_CLASS::EMPTY:
-                // do nothing for empty array items (skip)
-              break; // EMPTY:
-               
-            }//switch (messageID)
+                case INFO_TYPE_ENUM_CLASS::EXPIRIMENT_INFORMATION:
 
-        }//for summary
+                  // send to ground station output channel radiation and latchup Events Count
+                  // see assignemnt output example
+                  // increment info EI Count
+                  // increase sum up totals for radiationCount and LatchupEventCount  
+                  // from infoStoredArrayatindexExperiment for radiationCount and latchupEventCount                  
+                      
+                break;//case EXPIRIMENT_INFORMATION:
 
-        GroundStationOutputChannel <<
-            "Summary Information" << endl <<
-            "-------------------" << endl <<
-            "Number of Satellite  Information Records: " << infoSICount << endl <<
-            "Number of Experiment Information Records: " << infoEICount << endl <<
-            "Total Radiation Count      : " << totalRadiationCount      << endl <<
-            "Total Latch Up Event Count : " << totalLatchupEventCount   << endl <<
-            "Maximum Temperature        : " << maxTemperature           << endl <<
-            "Minimum Temperature        : " << minTemperature           << endl <<
-            "Maximum Voltage            : " << maxVoltage               << endl <<
-            "Minimum Voltage            : " << minVoltage               << endl << endl;
+                case INFO_TYPE_ENUM_CLASS::EMPTY:
+                  // do nothing for empty array items (skip)
+                break; // EMPTY:
+                
+              }//switch (messageID)
 
-        // hold screen GroundStationOutputChannel
+          }//for summary
+
+          GroundStationOutputChannel <<
+              "Summary Information" << endl <<
+              "-------------------" << endl <<
+              "Number of Satellite  Information Records: " << infoSICount << endl <<
+              "Number of Experiment Information Records: " << infoEICount << endl <<
+              "Total Radiation Count      : " << totalRadiationCount      << endl <<
+              "Total Latch Up Event Count : " << totalLatchupEventCount   << endl <<
+              "Maximum Temperature        : " << maxTemperature           << endl <<
+              "Minimum Temperature        : " << minTemperature           << endl <<
+              "Maximum Voltage            : " << maxVoltage               << endl <<
+              "Minimum Voltage            : " << minVoltage               << endl << endl;
+
+          // hold screen GroundStationOutputChannel
 
 
-    }//while
+      }//while
 
-    GroundStationOutputChannel << "Program Done" << endl;
+      GroundStationOutputChannel << "Program Done" << endl;
+    }//if
+    else 
+    {
+
+      cout << "File " << TELEMETRY_INPUT_CHANNEL << " could not be opened.\n";
+    }
 
     exit(EXIT_SUCCESS);
 
