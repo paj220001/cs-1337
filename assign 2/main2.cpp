@@ -1,4 +1,5 @@
-//Need to fix that the data array is now changing as well as the pointer 
+//This program gets an array from a file and sorts the array using a seperate pointer.
+//Then it prints out the sorted pointer as well as the original array
 
 #include <iostream>
 #include <fstream>
@@ -55,6 +56,7 @@ int main()
     cout << "Program Done." << endl;
 }
 
+//this function reads the file and stores the values in the array and creates the pointer 
 
 bool readIntoDataArray(ifstream &inputFile, int donations[],unsigned int &count, int * ptrArray[])
 {
@@ -77,6 +79,8 @@ bool readIntoDataArray(ifstream &inputFile, int donations[],unsigned int &count,
     return end;
 }
 
+//this function sorts the pointer in to ascending order
+
 void sort(int *pointerArray[MAX_ARRAY], unsigned int size)
 {
     bool swap;
@@ -96,12 +100,16 @@ void sort(int *pointerArray[MAX_ARRAY], unsigned int size)
     
 }
 
+//this function creates the swap if the numbers in the pointer need to be swapped 
+
 void swapIntPtr(int ** greater, int ** less)
 {
     int temp = **(greater);
     **greater = **less;
     **less = temp;
 }
+
+//this function displays the original array 
 
 void displayArray(int dataArray[], unsigned int maxElements)
 {
@@ -114,6 +122,8 @@ void displayArray(int dataArray[], unsigned int maxElements)
     
     cout << endl;
 }
+
+//this function displays the pointer 
 
 void displayArray(int* pointerArray[], unsigned int maxElements)
 {
