@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iomanip>
 #include <stdint.h>
-
 using namespace std;
 
 #define      GroundStationOutputChannel        cout
@@ -12,7 +11,7 @@ using namespace std;
 #define      infoStoredArrayatindexSatellite   infoStoredArray[index].masterUnion.satelliteInformation
 #define      infoStoredArrayatindexExperiment  infoStoredArray[index].masterUnion.expirimentInformation
 
-const string TELEMETRY_INPUT_CHANNEL = "inputTelemetryData.txt";
+const string TELEMETRY_INPUT_CHANNEL = "data.txt";
 
 enum class MESSAGE_ID_ENUM_CLASS { SATELLITE_INFORMATION_MESSAGE = 1, EXPERIMENT_INFORMATION_MESSAGE = 2};
 MESSAGE_ID_ENUM_CLASS messageIdEnum;
@@ -53,9 +52,9 @@ int main() {
     MasterInfoDiscriminatedUnionStruct infoStoredArray[ARRAY_DATA_STORAGE_SIZE];
     MasterInfoDiscriminatedUnionStruct masterInfoDiscriminatedUnionStruct;
     uint8_t entryPositionIndex = 0;
-    ifstream telemetryInputChannel(TELEMETRY_INPUT_CHANNEL);
-    MasterUnion info;
-    
+    uint8_t index;
+    ifstream telemetryInputChannel("data.txt");
+
     if(telemetryInputChannel)
     {
 
@@ -89,23 +88,39 @@ int main() {
               // set discriminated union masterInfoDiscriminatedUnionStruct infoType to SATELLITE INFORMATION
               masterInfoDiscriminatedUnionStruct.infoTypeEnum = INFO_TYPE_ENUM_CLASS::SATELLITE_INFORMATION;
               // read in from telemetryInputChannel into union masterInfoSatellite temperature and voltage
-              telemetryInputChannel >> info.satelliteInformation.temperature >> info.satelliteInformation.voltage;
+              telemetryInputChannel >>masterInfoSatellite.temperature >> masterInfoSatellite.voltage;
               // send this information to the Ground Station Output Channel, see output in the assignment
-              GroundStationOutputChannel << "Temperature : " << info.satelliteInformation.temperature << endl;
-              GroundStationOutputChannel << "Voltage : " << info.satelliteInformation.voltage << endl;
+              GroundStationOutputChannel << "Temperature : " << masterInfoSatellite.temperature << endl;
+              GroundStationOutputChannel << "Voltage     : " << masterInfoSatellite.voltage << endl << endl;
               // put masterInfoDiscriminatedUnionStruct into stored array at the entry Position Index
+              index = entryPositionIndex;
+              infoStoredArrayatindexSatellite = masterInfoSatellite;
               // adjust entryPositionIndex to next entry or back to start index if past end of array
-
+              entryPositionIndex++;
+              if(entryPositionIndex > 5)
+              {
+                entryPositionIndex = 0;
+              }
             break; //MESSAGE_ID_ENUM_CLASS::SATELLITE_INFORMATION_MESSAGE:
 
             case MESSAGE_ID_ENUM_CLASS::EXPERIMENT_INFORMATION_MESSAGE:
 
               // set discriminated union masterInfoDiscriminatedUnionStruct infoTypeEnum to EXPIRIMENT INFORMATION
+              masterInfoDiscriminatedUnionStruct.infoTypeEnum = INFO_TYPE_ENUM_CLASS::EXPIRIMENT_INFORMATION;
               // read in from telemetryInputChannel into union masterInfoSatellite radiation Count and latchupEventsCount
+              telemetryInputChannel >>masterInfoExperiment.radiationCount >> masterInfoExperiment.latchupEventsCount;
               // send this information to the Ground Station Output Channel, see output in the assignment
+              GroundStationOutputChannel << "Radiation Count      : " << masterInfoExperiment.radiationCount << endl;
+              GroundStationOutputChannel << "Latch up Event Count :         : " << masterInfoExperiment.latchupEventsCount << endl << endl;
               // put masterInfoDiscriminatedUnionStruct into stored array at the entry Position Index
+              index = entryPositionIndex;
+              infoStoredArrayatindexExperiment = masterInfoExperiment;
               // adjust entryPositionIndex to next entry or back to start index if past end of array
-
+              entryPositionIndex++;
+              if(entryPositionIndex > 5)
+              {
+                entryPositionIndex = 0;
+              }
             break; //MESSAGE_ID::EXPERIMENT_INFORMATION_MESSAGE:
 
           }//switch (infoStoredArray[index].infoType)
@@ -118,6 +133,11 @@ int main() {
                   infoEICount            = 0;
 
           //set SI Info calculate min max for SI
+          minTemperature  = masterInfoSatellite.temperature;       // -50 - 212
+          maxTemperature  = masterInfoSatellite.temperature;
+          minVoltage = masterInfoSatellite.voltage;         // 0.0 - 100.0
+          maxVoltage = masterInfoSatellite.voltage;
+
           
           GroundStationOutputChannel <<
               "History:" << endl <<
@@ -129,10 +149,29 @@ int main() {
                 case INFO_TYPE_ENUM_CLASS::SATELLITE_INFORMATION:
 
                   // send to ground station output channel temperature and voltage
+                  GroundStationOutputChannel << "Temperature : " << masterInfoSatellite.temperature << endl;
+                  GroundStationOutputChannel << "Voltage     : " << masterInfoSatellite.voltage << endl << endl;;
                   // see assignment output example
                   // increment info SI Count
-
+                  infoSICount++;
                   // set running min max summary information (temperature, voltage)
+                  if(masterInfoSatellite.temperature > maxTemperature)
+                  {
+                    masterInfoSatellite.temperature = maxTemperature;
+                  }
+                  else if(masterInfoSatellite.temperature < minTemperature)
+                  {
+                    masterInfoSatellite.temperature = minTemperature;
+                  }
+
+                  if(masterInfoSatellite.voltage > maxVoltage)
+                  {
+                    masterInfoSatellite.voltage = maxVoltage;
+                  }
+                  else if(masterInfoSatellite.voltage < minVoltage)
+                  {
+                    masterInfoSatellite.voltage = minVoltage;
+                  }
                     
                 break; //case SATELLITE_INFORMATION:
 
@@ -176,7 +215,7 @@ int main() {
     else 
     {
 
-      cout << "File " << TELEMETRY_INPUT_CHANNEL << " could not be opened.\n";
+      GroundStationOutputChannel << "File " << TELEMETRY_INPUT_CHANNEL << " could not be opened.\n";
     }
 
     exit(EXIT_SUCCESS);
