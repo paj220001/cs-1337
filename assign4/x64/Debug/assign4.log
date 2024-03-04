@@ -1,0 +1,5 @@
+﻿  HotDogsStandsClass.cpp
+  main.cpp
+C:\Users\prana\Documents\cs-1337\assign4\main.cpp(138,19): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Generating Code...
+  assign4.vcxproj -> C:\Users\prana\Documents\cs-1337\assign4\x64\Debug\assign4.exe
