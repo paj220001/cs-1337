@@ -28,18 +28,15 @@ public:
 
          throw domain_error(LineInfo(errorString, __FILE__, __LINE__));
 
-         catch (exception& e) {
-            cout << e.what() << endl;
-            cout << endl << "Press the enter key once or twice to leave..." << endl;
-            cin.ignore(); cin.get();
-            exit(EXIT_FAILURE);
-         }
       }
-      centerX = x;
-      centerY = y;
-      radius = radi;
-      double area = calculateArea();
-      setArea(area);
+      else
+      {
+         centerX = x;
+         centerY = y;
+         radius = radi;
+         double area = calculateArea();
+         setArea(area);
+      }
    }
 
 
@@ -54,10 +51,10 @@ public:
    virtual void display() const override
    {
       cout << "Shape is a Circle :"
-           << "Center X : " << centerX
-           << "Center Y : " << centerY
-           << "Radius   : " << radius
-           << "Area     : " << getArea();
+           << "Center X : " << centerX << endl
+           << "Center Y : " << centerY << endl
+           << "Radius   : " << radius << endl
+           << "Area     : " << getArea() << endl << endl;
    }
 
 
