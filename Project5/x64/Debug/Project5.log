@@ -1,4 +1,2 @@
 ﻿  main.cpp
-C:\Users\prana\Documents\cs-1337\Project5\main.cpp(66,4): warning C4154: deletion of an array expression; conversion to pointer supplied
-C:\Users\prana\Documents\cs-1337\Project5\main.cpp(11,40): warning C4101: 'area': unreferenced local variable
-  Project5.vcxproj -> C:\Users\prana\Documents\cs-1337\Project5\x64\Debug\Project5.exe
+  Project5.vcxproj -> C:\Users\pajos\Desktop\cs 1337\cs-1337\Project5\x64\Debug\Project5.exe

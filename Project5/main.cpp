@@ -8,10 +8,10 @@ const int MAX_SHAPES = 3;
 int main()
 {
    BasicShapeClass* shapeArray[MAX_SHAPES];
-   double x, y, radius, length, width, area;
+   double x, y, radius, length, width;
    unsigned shape_choice;
    cout << "Choose 3 Shapes and enter attributes,\n"
-        << "when all 3 shapes are entered the calculated results for all 3 shapes will\n display\n\n";
+      << "when all 3 shapes are entered the calculated results for all 3 shapes will\n display\n\n";
 
 
    for (int count = 0; count < MAX_SHAPES;)
@@ -26,10 +26,10 @@ int main()
       {
          try
          {
-            if(shape_choice == 1)
+            if (shape_choice == 1)
             {
                cout << "\n\n"
-                    << "Enter the circles x, y, and radius : ";
+                  << "Enter the circles x, y, and radius : ";
                cin >> x >> y >> radius;
                shapeArray[count] = new CircleClass(x, y, radius);
             }
@@ -42,7 +42,7 @@ int main()
             }
             count++;
          }
-         catch (exception& e) 
+         catch (exception& e)
          {
             cout << e.what() << endl;
             cout << endl << "Press the enter key once or twice to leave..." << endl;
@@ -53,17 +53,17 @@ int main()
       else
       {
          cout << "\n\n"
-              << "Wrong menu value : " << shape_choice << endl
-              << "Please try again...." << endl << endl;
+            << "Wrong menu value : " << shape_choice << endl
+            << "Please try again...." << endl << endl;
       }
    }
 
    for (int count = 0; count < MAX_SHAPES; count++)
    {
       shapeArray[count]->display();
+      delete shapeArray[count];
    }
 
-   delete[] shapeArray;
-
    return 0;
+
 }
