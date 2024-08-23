@@ -1,2 +1,2 @@
 ﻿  main.cpp
-  Project5.vcxproj -> C:\Users\pajos\Desktop\cs 1337\cs-1337\Project5\x64\Debug\Project5.exe
+C:\Users\prana\Documents\cs-1337\Project5\main.cpp(27,10): error C2317: 'try' block starting on line '27' has no catch handlers

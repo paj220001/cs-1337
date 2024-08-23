@@ -41,6 +41,8 @@ int main()
                shapeArray[count] = new RectangleClass(width, length);
             }
             count++;
+
+            cout << endl;
          }
          catch (exception& e)
          {
